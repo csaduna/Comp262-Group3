@@ -1,0 +1,62 @@
+from textblob import TextBlob
+
+# Function to calculate sentiment polarity using TextBlob
+def calculate_textblob_polarity(text):
+    blob = TextBlob(text)
+    polarity = blob.sentiment.polarity
+    return polarity
+
+# Function to categorize sentiment based on polarity
+def categorize_sentiment(polarity):
+    if polarity > 0:
+        return 'Positive'
+    elif polarity < 0:
+        return 'Negative'
+    else:
+        return 'Neutral'
+
+# Apply TextBlob sentiment analysis to reviewText
+df['reviewText_textblobPolarity'] = df['reviewText'].apply(calculate_textblob_polarity)
+df['reviewText_textblobSentiment'] = df['reviewText_textblobPolarity'].apply(categorize_sentiment)
+
+# Apply TextBlob sentiment analysis to summary
+df['summary_textblobPolarity'] = df['summary'].apply(calculate_textblob_polarity)
+df['summary_textblobSentiment'] = df['summary_textblobPolarity'].apply(categorize_sentiment)
+
+# Display sentiment analysis results
+print("Sentiment analysis results using TextBlob:")
+print(df[['reviewText', 'reviewText_textblobPolarity', 'reviewText_textblobSentiment']].head())
+print(df[['summary', 'summary_textblobPolarity', 'summary_textblobSentiment']].head())
+
+# For visualization, you can use similar plotting functions as before, replacing VADER results with TextBlob results.
+import matplotlib.pyplot as plt
+
+# Plotting sentiment analysis results for reviewText
+plt.figure(figsize=(10, 6))
+df['reviewText_textblobSentiment'].value_counts().plot(kind='pie', autopct='%1.1f%%', colors=['springgreen', 'slategray', 'firebrick'])
+plt.title('Sentiment Analysis of reviewText using TextBlob')
+plt.ylabel('')
+plt.show()
+
+# Plotting sentiment analysis results for summary
+plt.figure(figsize=(10, 6))
+df['summary_textblobSentiment'].value_counts().plot(kind='pie', autopct='%1.1f%%', colors=['springgreen', 'slategray', 'firebrick'])
+plt.title('Sentiment Analysis of summary using TextBlob')
+plt.ylabel('')
+plt.show()
+
+# Setting up subplots for comparison with VADER results
+fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+
+# Plotting sentiment analysis results for reviewText
+df['reviewText_textblobSentiment'].value_counts().plot(kind='pie', autopct='%1.1f%%', ax=axes[0], colors=['springgreen', 'slategray', 'firebrick'])
+axes[0].set_title('Sentiment Analysis of reviewText using TextBlob')
+axes[0].set_ylabel('')
+
+# Plotting sentiment analysis results for summary
+df['summary_textblobSentiment'].value_counts().plot(kind='pie', autopct='%1.1f%%', ax=axes[1], colors=['springgreen', 'slategray', 'firebrick'])
+axes[1].set_title('Sentiment Analysis of summary using TextBlob')
+axes[1].set_ylabel('')
+
+plt.tight_layout()
+plt.show()
